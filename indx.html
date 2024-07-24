@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Juego del Ahorcado</title>
+  </head>
+  <body>
+    <h1>Juego del Ahorcado</h1>
+    <p>Palabra: <span id="palabra"></span></p>
+    <p>Letras incorrectas: <span id="letras-incorrectas"></span></p>
+    <p>Intentos restantes: <span id="intentos-restantes"></span></p>
+    <p>
+      Ingresa una letra: <input type="text" id="letraInput" maxlength="1" />
+    </p>
+    <button onclick="procesarLetra()">Ingresar</button>
+
+    <script>
+      const palabras = [
+        "perrito",
+        "cerdo",
+        "vaca",
+        "ardilla",
+        "jirafa",
+        "pupinish",
+      ];
+      const palabraIncognita =
+        palabras[Math.floor(Math.random() * palabras.length)];
+      const letrasIncorrectas = [];
+      const intentosMax = 10;
+      let intentosRestantes = intentosMax;
+      const letrasIncognitas = [];
+
+      function iniciarJuego() {
+        for (let i = 0; i < palabraIncognita.length; i++) {
+          letrasIncognitas[i] = "_";
+        }
+
+        actualizarPantalla();
+      }
+
+      function procesarLetra() {
+        const letraInput = document.getElementById("letraInput");
+        const letraIngresada = letraInput.value.toLowerCase();
+
+        if (
+          letrasIncorrectas.includes(letraIngresada) ||
+          letrasIncognitas.includes(letraIngresada)
+        ) {
+          alert("Ya ingresaste esa letra");
+          return;
+        }
+
+        if (palabraIncognita.includes(letraIngresada)) {
+          for (let i = 0; i < palabraIncognita.length; i++) {
+            if (palabraIncognita[i] === letraIngresada) {
+              letrasIncognitas[i] = letraIngresada;
+            }
+          }
+        } else {
+          letrasIncorrectas.push(letraIngresada);
+          intentosRestantes--;
+        }
+
+        actualizarPantalla();
+        letraInput.value = "";
+
+        const palabraAdivinada = !letrasIncognitas.includes("_");
+        const sinIntentos = intentosRestantes === 0;
+
+        if (palabraAdivinada) {
+          alert("¡Felicidades, has ganado!");
+          resetearJuego();
+        } else if (sinIntentos) {
+          alert(`Has perdido. La palabra secreta era: ${palabraIncognita}`);
+          resetearJuego();
+        }
+      }
+
+      function actualizarPantalla() {
+        document
+          .getElementById("letraInput")
+          .addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+              procesarLetra();
+            }
+          });
+        document.getElementById("palabra").textContent =
+          letrasIncognitas.join(" ");
+        document.getElementById("letras-incorrectas").textContent =
+          letrasIncorrectas.join(", ");
+        document.getElementById("intentos-restantes").textContent =
+          intentosRestantes;
+      }
+
+      function resetearJuego() {
+        document.getElementById("letraInput").value = "";
+        letrasIncorrectas.length = 0;
+        intentosRestantes = intentosMax;
+        iniciarJuego();
+      }
+
+      iniciarJuego();
+    </script>
+  </body>
+</html>
